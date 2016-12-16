@@ -45,22 +45,22 @@ int main()
 	for(i = 180;i <= 900;i++)
 		printf("%d  x : %f   y : %f\n",i,x_t[i],y_t[i]);
 	//Linear approximation
-	for(i = 180;i < 540;i++){
-		j = 10;
+	for(i = 180;i < 500;i++){
+		j = 1;
 		k = 0;
 		for(;;){
-			if(-0.2 < x_t[i] - x_t[i + j] && x_t[i] - x_t[i + j] < 0.2){
+			if(-0.1 < x_t[i] - x_t[i + j] && x_t[i] - x_t[i + j] < 0.1){
 				step[k] = i + j;
-				j += 10;
+				j++;
 				k++;
 			}
 			else
-				j += 10;
+				j++;
 			if(j > 500)
 				break;
 		}
 		printf("k : %d\n",k);
-		if(k >= 10){
+		if(k >= 30){
 			//sum
 			x_s = 0;
 			for(j = 0;j < k;j++)
@@ -93,24 +93,24 @@ int main()
 	}
 	printf("----------\n");
 
-	for(i = 900;i > 540;i--){
+	for(i = 900;i > 580;i--){
 		if(flag == 1)
 			break;
-		j = 10;
+		j = 1;
 		k = 0;
 		for(;;){
-			if(-0.2 < x_t[i] - x_t[i - j] && x_t[i] - x_t[i - j] < 0.2){
+			if(-0.1 < x_t[i] - x_t[i - j] && x_t[i] - x_t[i - j] < 0.1){
 				step[k] = i - j;
-				j += 10;
+				j++;
 				k++;
 			}
 			else
-				j += 10;
+				j++;
 			if(j > 500)
 				break;
 		}
 		printf("k : %d\n",k);
-		if(k >= 10){
+		if(k >= 30){
 			//sum
 			x_s = 0;
 			for(j = 0;j < k;j++)
@@ -143,21 +143,21 @@ int main()
 
 	//bottom line
 	for(i = 400;i <= 700;i++){
-		j = 10;
+		j = 1;
 		k = 0;
 		for(;;){
 			if(-0.1 < y_t[i] - y_t[i + j] && y_t[i] - y_t[i + j] < 0.1){
 				step[k] = i + j;
-				j += 10;
+				j++;
 				k++;
 			}
 			else
-				j += 10;
+				j++;
 			if(i + j > 900)
 				break;
 		}
 		printf("k : %d\n",k);
-		if(k >= 10){
+		if(k >= 30){
 			//sum
 			x_s = 0;
 			for(j = 0;j < k;j++)
