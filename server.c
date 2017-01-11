@@ -23,14 +23,16 @@ main()
      bind(sock0, (struct sockaddr *)&addr, sizeof(addr));
 
      /* TCPクライアントからの接続要求を待てる状態にする */   
-     listen(sock0, 5);
+     listen(sock0, 6);
 
      /* TCPクライアントからの接続要求を受け付ける */
      len = sizeof(client);
      sock = accept(sock0, (struct sockaddr *)&client, &len);
 
      /* 5文字送信 */
-     write(sock, "5", 1);
+     for(;;){
+        write(sock, "Hello\n", 6);
+     }
 
      /* TCPセッションの終了 */
      close(sock);

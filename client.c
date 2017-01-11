@@ -26,10 +26,12 @@ main()
      connect(sock, (struct sockaddr *)&server, sizeof(server));
 
      /* サーバからデータを受信 */
-     memset(buf, 0, sizeof(buf));
-     n = read(sock, buf, sizeof(buf));
+     for(;;){
+        memset(buf, 0, sizeof(buf));
+        n = read(sock, buf, sizeof(buf));
 
-     printf("%d, %s\n", n, buf);
+        printf("%d, %s\n", n, buf);
+     }
 
      /* socketの終了 */
      close(sock);
