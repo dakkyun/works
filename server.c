@@ -30,9 +30,7 @@ main()
      sock = accept(sock0, (struct sockaddr *)&client, &len);
 
      /* 5文字送信 */
-     for(;;){
-        write(sock, "Hello\n", 6);
-     }
+     write(sock, "-5\n", 2);
 
      /* TCPセッションの終了 */
      close(sock);

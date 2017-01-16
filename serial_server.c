@@ -11,7 +11,7 @@
 
 int main(int argc, char *argv[])
 {
-        char buf[255];                    /* バッファ */
+        char buf[255] = [0];              /* バッファ */
         int fd;                           /* ファイルディスクリプタ */
         struct termios oldtio, newtio;    /* シリアル通信設定 */
                     
@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
                                              
       //read(fd, buf, sizeof(buf));       /* デバイスから2バイト読み込み */
         buf[0] = 123;
-            write(fd, buf, 1);            /* デバイスへ1バイト書き込み */
+        write(fd, buf, 1);                /* デバイスへ1バイト書き込み */
                                                             
         ioctl(fd, TCSETS, &oldtio);       /* ポートの設定を元に戻す */
         close(fd);                        /* デバイスのクローズ */
