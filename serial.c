@@ -1,6 +1,8 @@
 #define BAUDRATE B9600
+#define PI 3.14159265359
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -10,22 +12,24 @@
 #include <unistd.h>
 int serial_ardinowrite(char * , char *);
 int serial_ardinoread(char *,char *);
+int i;
 
 int main()
 {
-	char name[255],devicename[] = "/dev/ttyACM1";
+	char name[255],devicename[] = "/dev/ttyACM0";
 	serial_ardinowrite(devicename,(char *)"whatyourname");
-	serial_ardinoread(devicename,name);
+	//serial_ardinoread(devicename,name);
 	printf("%s\n",name);
 }
 
 int serial_ardinowrite(char *devicename,char *messege)
 {
-	char buf[255];
+    int a = 6456,b;
+	char buf[255],temp,mark[255];
 	int fd;
 	struct termios oldtio,newtio;
 
-	strcpy(buf,messege);//間違ってもmessegeを変更してしまわないように
+	//strcpy(buf,messege);//間違ってもmessegeを変更してしまわないように
 	fd = open(devicename,O_RDWR|O_NONBLOCK); //デバイスのオープン
 	if(fd<0) //デバイスのオープンに失敗した場合
 	{
@@ -38,7 +42,24 @@ int serial_ardinowrite(char *devicename,char *messege)
 	newtio = oldtio;
 	newtio.c_cflag = BAUDRATE | CRTSCTS | CS8 | CLOCAL | CREAD;
 	ioctl(fd,TCSETS,&newtio);
-	write(fd,buf,sizeof(buf));
+
+for(i = 0;i < 1;i++){
+    mark[0] = 127;
+    printf("%c\n",mark[0]);
+    write(fd,mark,1);
+    
+    temp = a;
+    buf[0] = a>>8;
+    printf("%c\n",buf[0]);
+    write(fd,buf,1);
+
+    buf[0] = temp;
+    printf("%c\n",buf[0]);
+	write(fd,buf,1);
+}
+
+    //tcflush(fd,TCOFLUSH);
+
 	ioctl(fd,TCSETS,&oldtio);
 
 	close(fd);
@@ -48,7 +69,7 @@ int serial_ardinowrite(char *devicename,char *messege)
 }
 
 
-int serial_ardinoread(char *devicename,char *messege)
+/*int serial_ardinoread(char *devicename,char *messege)
 {
 	char mes[255];
 	char CR[2],LF[2],*p_c;
@@ -99,9 +120,9 @@ int serial_ardinoread(char *devicename,char *messege)
 	ioctl(fd,TCSETS,&oldtio);
 
 	close(fd);
-	if((p_c = strrchr(mes,CR[0]))!=(char)NULL) *p_c='\0';
-	if((p_c = strrchr(mes,LF[0]))!=(char)NULL) *p_c='\0';
-	strcpy(messege,mes);
+	//if((p_c = strrchr(mes,CR[0]))!=(char)NULL) *p_c='\0';
+	//if((p_c = strrchr(mes,LF[0]))!=(char)NULL) *p_c='\0';
+	//strcpy(messege,mes);
 
 	return 0;
-}
+}*/
