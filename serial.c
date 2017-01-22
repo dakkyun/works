@@ -10,43 +10,54 @@
 #include <fcntl.h>
 #include <termios.h>
 #include <unistd.h>
+
+#include "urg_sensor.h"
+#include "urg_utils.h"
+#include "open_urg_sensor.h"
+
 int serial_ardinowrite(char * , char *);
 int serial_ardinoread(char *,char *);
-FILE *fp;
-int data[1081] = {0};
-int step[1081] = {0};
-
-int i,j,k;	//Variable of if
-int flag;	//Whether a linear approximation
-
-double X = 8.0,Y = 4.1,sl = 0.13;	//Tunnel size
-double x,y;	//UAV's position
-double x_t[1081] = {0},y_t[1081] = {0};	//Tunnel coordinates
-double deg,rad;	//Angle from corner to corner
-double stddeg,cmpdeg;	//Reference angle, Comparison angle
-double slope;	//UAV's slope
-double x_s,y_s;	//sum
-double x_a,y_a;	//average
-double part_1,part_2;	//Calculating element of approximate straight line
-double a_1,b_1;	//Slope and Intercept of wall line
-double a_2,b_2;	//Slope and Intercept of bottom line
-double x_c,y_c,x_cc,y_cc;	//Corner coordinates
-double cldis_1,cldis_2;	//Distance to corner
-double diff_1,diff_2,difference;	//Detection of corner step number
-double step_1,step_2;	//Number of steps in the corner
-double x_0,cldis_0;	//Coordinates and distance of 180th step
 
 int main()
 {
 	char name[255],devicename[] = "/dev/ttyACM0";
 	serial_ardinowrite(devicename,(char *)"whatyourname");
 	//serial_ardinoread(devicename,name);
-	printf("%s\n",name);
+	//printf("%s\n",name);
 }
 
-int sensor()
+int serial_ardinowrite(char *devicename,char *messege)
 {
-	fp = fopen("test.txt","r");
+    FILE *fp;
+    int data[1081] = {0};
+    int step[1081] = {0};
+    
+    int i,j,k;	//Variable of if
+    int flag;	//Whether a linear approximation
+    
+    double X = 8.0,Y = 4.1,sl = 0.13;	//Tunnel size
+    double x,y;	//UAV's position
+    double x_t[1081] = {0},y_t[1081] = {0};	//Tunnel coordinates
+    double deg,rad;	//Angle from corner to corner
+    double stddeg,cmpdeg;	//Reference angle, Comparison angle
+    double slope;	//UAV's slope
+    double x_s,y_s;	//sum
+    double x_a,y_a;	//average
+    double part_1,part_2;	//Calculating element of approximate straight line
+    double a_1,b_1;	//Slope and Intercept of wall line
+    double a_2,b_2;	//Slope and Intercept of bottom line
+    double x_c,y_c,x_cc,y_cc;	//Corner coordinates
+    double cldis_1,cldis_2;	//Distance to corner
+    double diff_1,diff_2,difference;	//Detection of corner step number
+    double step_1,step_2;	//Number of steps in the corner
+    double x_0,cldis_0;	//Coordinates and distance of 180th step
+
+    int a,b;
+    char buf[255],temp,mark[255];
+	int fd;
+	struct termios oldtio,newtio;
+
+    fp = fopen("test.txt","r");
 	for(i = 0;i < 1081;i++)
 		fscanf(fp,"%d",&data[i]);
 
@@ -54,7 +65,7 @@ int sensor()
 
 	// OûÌf[^ÌÝð\¦
 	for(i = 0;i <= 1080;i++){
-		printf("%d    :   %ld [mm]\n", i, data[i]);
+		printf("%d    :   %d [mm]\n", i, data[i]);
 		if(i >= 180 && i <= 900){
 			//tunnel coodinate
 			rad = (i - 180) * 0.25 * (PI / 180.0);	
@@ -275,21 +286,11 @@ int sensor()
 	//printf("stddeg : %lf    cmpdeg : %lf\n",stddeg,cmpdeg);
 	printf("slope : %lf [deg]\n",slope);
 
-	return 0;
-
-}
-
-int serial_ardinowrite(char *devicename,char *messege)
-{
-    int a = 6456,b;
-	char buf[255],temp,mark[255];
-	int fd;
-	struct termios oldtio,newtio;
-
 	//strcpy(buf,messege);//間違ってもmessegeを変更してしまわないように
 	fd = open(devicename,O_RDWR|O_NONBLOCK); //デバイスのオープン
 	if(fd<0) //デバイスのオープンに失敗した場合
 	{
+        for(;;)
 		printf("ERROR on device open.\n");
 		exit(1);
 	}
@@ -300,7 +301,10 @@ int serial_ardinowrite(char *devicename,char *messege)
 	newtio.c_cflag = BAUDRATE | CRTSCTS | CS8 | CLOCAL | CREAD;
 	ioctl(fd,TCSETS,&newtio);
 
-for(i = 0;i < 1;i++){
+    x += (X / 2.0);
+    a = x * 1000.0;
+    printf("%d\n",a);
+for(;;){
     mark[0] = 127;
     printf("%c\n",mark[0]);
     write(fd,mark,1);

@@ -10,6 +10,7 @@
 #include <unistd.h>
 int serial_ardinowrite(char * , char *);
 int serial_ardinoread(char *,char *);
+int i;
 
 int main()
 {
@@ -21,7 +22,7 @@ int main()
 
 int serial_ardinowrite(char *devicename,char *messege)
 {
-    int a,b;
+    int a=2000,b;
     char buf[255],temp,mark[255];
 	int fd;
 	struct termios oldtio,newtio;
@@ -39,9 +40,9 @@ int serial_ardinowrite(char *devicename,char *messege)
 	newtio = oldtio;
 	newtio.c_cflag = BAUDRATE | CRTSCTS | CS8 | CLOCAL | CREAD;
 	ioctl(fd,TCSETS,&newtio);
-
-for(i = 0;i < 1;i++){
-    mark[0] = 126;
+   sleep(2); 
+for(i = 0;i < 2;i++){
+    mark[0] = 127;
     printf("%c\n",mark[0]);
     write(fd,mark,1);
     
